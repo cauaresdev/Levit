@@ -27,7 +27,7 @@ npm run preview
 npm run lint
 ```
 
-## Project Structure
+## Estrutura do projeto Atual
 
 ```
 src/
@@ -45,7 +45,7 @@ src/
 
 ## Design Tokens
 
-Defined in `src/index.css` via Tailwind `@theme`:
+Definido em `src/index.css` via Tailwind `@theme`:
 
 | Token             | Value     | Tailwind Usage          |
 |-------------------|-----------|-------------------------|
