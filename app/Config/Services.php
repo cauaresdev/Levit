@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Libraries\AuthenticatedUser;
 
 /**
  * Services Configuration file.
@@ -29,4 +30,12 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+    public static function authenticatedUser(bool $getShared = true): AuthenticatedUser
+    {
+        if ($getShared) {
+            return static::getSharedInstance('authenticatedUser');
+        }
+
+        return new AuthenticatedUser();
+    }
 }

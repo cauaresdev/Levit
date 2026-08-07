@@ -21,11 +21,13 @@ class JwtService
      */
     public function gerar(array $claims): string
     {
+        helper('uuid');
         $agora = time();
 
         $payload = array_merge($claims, [
             'iat' => $agora,
             'exp' => $agora + $this->ttlSeconds,
+            'jti' => generate_uuid_v7(),
         ]);
 
         return JWT::encode($payload, $this->secretKey, $this->algorithm);

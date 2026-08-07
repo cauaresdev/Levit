@@ -51,17 +51,64 @@ class AuthController extends BaseApiController
             'empresa_id' => $resultado['empresa']['id'],
         ]);
 
-        return $this->respondSuccess([
+        return $this->respondSuccess(
+            $this->respostaAutenticacao($resultado['usuario'], $resultado['empresa']),
+            201
+        );
+    }
+
+    private function respostaAutenticacao(array $usuario, array $empresa): array
+    {
+        $token = $this->jwtService->gerar([
+            'sub'        => $usuario['id'],
+            'empresa_id' => $empresa['id'],
+        ]);
+
+        return [
             'token'   => $token,
             'usuario' => [
-                'id'    => $resultado['usuario']['id'],
-                'nome'  => $resultado['usuario']['nome'],
-                'email' => $resultado['usuario']['email'],
+                'id'    => $usuario['id'],
+                'nome'  => $usuario['nome'],
+                'email' => $usuario['email'],
             ],
             'empresa' => [
-                'id'   => $resultado['empresa']['id'],
-                'nome' => $resultado['empresa']['nome'],
+                'id'   => $empresa['id'],
+                'nome' => $empresa['nome'],
             ],
-        ], 201);
+        ];
+    }
+
+    public function login()
+    {
+        $dados = $this->request->getJSON(true) ?? [];
+
+        $rules = [
+            'email' => ['required', 'valid_email'],
+            'senha' => ['required'],
+        ];
+
+        if (! $this->validateData($dados, $rules)) {
+            return $this->respondError('Dados inválidos.', 422, $this->validator->getErrors());
+        }
+
+        try {
+            $resultado = $this->authService->autenticar($dados['email'], $dados['senha']);
+        } catch (\DomainException $e) {
+            return $this->respondError($e->getMessage(), 401);
+        }
+
+        return $this->respondSuccess(
+            $this->respostaAutenticacao($resultado['usuario'], $resultado['empresa']),
+            200
+        );
+    }
+
+    public function logout()
+    {
+        $user = service('authenticatedUser');
+
+        $this->authService->revogarToken($user->jti, $user->id, $user->expiraEm);
+
+        return $this->respondSuccess(null, 200);
     }
 }
