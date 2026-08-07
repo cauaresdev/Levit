@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  /* ========== Paleta Levit (Figma) ========== */
+  --color-primary: #534BAF;
+  --color-light-text: #666666;
+  --color-background: #F3F3F3;
+  --color-divider: #E5E5E5;
+}
