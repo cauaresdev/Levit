@@ -11,6 +11,7 @@ class UsuarioModel extends BaseModel
 
     protected $allowedFields = [
         'empresa_id',
+        'cargo_id',
         'nome',
         'email',
         'senha_hash',

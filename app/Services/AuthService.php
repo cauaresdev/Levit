@@ -5,18 +5,27 @@ namespace App\Services;
 use App\Models\EmpresaModel;
 use App\Models\UsuarioModel;
 use App\Models\TokenRevogadoModel;
+use App\Models\CargoModel;
+use App\Models\PermissaoModel;
+use App\Models\CargoPermissaoModel;
 
 class AuthService
 {
     protected EmpresaModel $empresaModel;
     protected UsuarioModel $usuarioModel;
     protected TokenRevogadoModel $tokenRevogadoModel;
+    protected CargoModel $cargoModel;
+    protected PermissaoModel $permissaoModel;
+    protected CargoPermissaoModel $cargoPermissaoModel;
 
     public function __construct()
     {
-        $this->empresaModel       = new EmpresaModel();
-        $this->usuarioModel       = new UsuarioModel();
-        $this->tokenRevogadoModel = new TokenRevogadoModel();
+        $this->empresaModel        = new EmpresaModel();
+        $this->usuarioModel        = new UsuarioModel();
+        $this->tokenRevogadoModel  = new TokenRevogadoModel();
+        $this->cargoModel          = new CargoModel();
+        $this->permissaoModel      = new PermissaoModel();
+        $this->cargoPermissaoModel = new CargoPermissaoModel();
     }
 
     /**
@@ -44,8 +53,23 @@ class AuthService
             'cnpj_cpf' => $dados['cnpj_cpf'],
         ]);
 
+        $cargoAdminId = $this->cargoModel->insert([
+            'empresa_id' => $empresaId,
+            'nome'       => 'Admin',
+        ]);
+
+        $todasPermissoes = $this->permissaoModel->findAll();
+
+        foreach ($todasPermissoes as $permissao) {
+            $this->cargoPermissaoModel->insert([
+                'cargo_id'     => $cargoAdminId,
+                'permissao_id' => $permissao['id'],
+            ]);
+        }
+
         $usuarioId = $this->usuarioModel->insert([
             'empresa_id' => $empresaId,
+            'cargo_id'   => $cargoAdminId,
             'nome'       => $dados['nome'],
             'email'      => $dados['email'],
             'senha_hash' => password_hash($dados['senha'], PASSWORD_BCRYPT, ['cost' => 10]),
