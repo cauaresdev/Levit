@@ -34,6 +34,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'auth'          => \App\Filters\AuthFilter::class,
     ];
 
     /**
@@ -51,6 +52,7 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
+            'cors',       // CORS (must be in required to handle OPTIONS preflight)
             'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
         ],
@@ -71,15 +73,8 @@ class Filters extends BaseFilters
      * }
      */
     public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
+        'before' => [],
+        'after' => [],
     ];
 
     /**

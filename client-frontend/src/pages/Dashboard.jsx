@@ -1,12 +1,20 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
-  // Variáveis simulando o estado inicial vazio (aguardando o back-end)
-  const user = null; // Dados do usuário logado
-  const kpis = []; // Array de métricas superiores
-  const recentModules = []; // Array de módulos recentes
-  const kanbanStages = []; // Array com as colunas do funil (Triagem, Entrevista, etc.)
-  const teamMembers = []; // Array com os membros da equipe
+  const { usuario, empresa, iniciais, primeiroNome, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // These remain empty until their respective backend endpoints are built
+  const kpis = [];
+  const recentModules = [];
+  const kanbanStages = [];
+  const teamMembers = [];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen flex bg-background font-sans text-gray-900">
@@ -37,18 +45,22 @@ export default function Dashboard() {
         </div>
 
         {/* Perfil do Usuário Logado (Bottom) */}
-        <div className="p-6 border-t border-divider flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
-            {/* BACK-END: Iniciais do usuário */}
-            {user ? user.initials : '...'}
+        <div className="p-6 border-t border-divider">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+              {iniciais}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">{usuario?.nome || 'Carregando...'}</p>
+              <p className="text-[10px] text-light-text truncate">{empresa?.nome || ''}</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">{user ? user.name : 'Carregando...'}</p>
-          </div>
-          <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">
-            {/* BACK-END: Regra de acesso (Admin, etc) */}
-            {user ? user.role : '...'}
-          </span>
+          <button
+            onClick={handleLogout}
+            className="mt-3 w-full text-xs text-light-text hover:text-red-500 transition-colors py-1.5 border border-divider rounded-lg hover:border-red-300"
+          >
+            Sair da conta
+          </button>
         </div>
       </aside>
 
@@ -59,15 +71,14 @@ export default function Dashboard() {
         <header className="flex justify-between items-end mb-8">
           <div>
             <h1 className="text-2xl font-bold">
-              Olá, {user ? user.firstName : 'Usuário'}!
+              Olá, {primeiroNome}!
             </h1>
             <p className="text-sm text-light-text mt-1">
-              {/* BACK-END: Injetar data dinâmica formatada */}
               {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
           <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
-            {user ? user.initials : '...'}
+            {iniciais}
           </div>
         </header>
 
@@ -171,7 +182,7 @@ export default function Dashboard() {
 
           {/* LISTA DE EQUIPE */}
           <section className="bg-white border border-divider rounded-xl p-6">
-            <h2 className="font-semibold text-md mb-6">Equipe Levit</h2>
+            <h2 className="font-semibold text-md mb-6">Equipe {empresa?.nome || 'Levit'}</h2>
             <div className="flex flex-col gap-4">
               {teamMembers.length === 0 ? (
                 // Espaço reservado estrutural para a lista de membros

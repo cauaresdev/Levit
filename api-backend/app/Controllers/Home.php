@@ -4,15 +4,8 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index()
+    public function index(): string
     {
-        return $this->response->setJSON([
-            'status' => 'sucesso',
-            'mensagem' => 'Sistema rodando.',
-            'dados' => [
-                'sistema' => 'Levit - Backend',
-                'nivel_bateria' => '100%'
-            ]
-        ]);
+        return view('welcome_message');
     }
 }
