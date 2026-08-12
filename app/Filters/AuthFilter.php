@@ -30,18 +30,33 @@ class AuthFilter implements FilterInterface
                 ->setJSON(['status' => 'error', 'message' => 'Token inválido ou expirado.']);
         }
 
-        if ((new AuthService())->tokenRevogado($claims->jti)) {
+        $authService = new AuthService();
+
+        if ($authService->tokenRevogado($claims->jti)) {
             return service('response')
                 ->setStatusCode(401)
                 ->setJSON(['status' => 'error', 'message' => 'Token inválido ou expirado.']);
         }
 
+        $permissoes = $authService->permissoesDoUsuario($claims->sub);
+
         service('authenticatedUser')->preencher(
             $claims->sub,
             $claims->empresa_id,
             $claims->jti,
-            $claims->exp
+            $claims->exp,
+            $permissoes
         );
+
+        if (! empty($arguments)) {
+            $permissaoNecessaria = $arguments[0];
+
+            if (! in_array($permissaoNecessaria, $permissoes, true)) {
+                return service('response')
+                    ->setStatusCode(403)
+                    ->setJSON(['status' => 'error', 'message' => 'Você não tem permissão para realizar esta ação.']);
+            }
+        }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

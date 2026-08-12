@@ -134,4 +134,24 @@ class AuthService
     {
         return (bool) $this->tokenRevogadoModel->where('jti', $jti)->first();
     }
+
+    /**
+     * Retorna os códigos de permissão do usuário, com base no cargo dele.
+     */
+    public function permissoesDoUsuario(string $usuarioId): array
+    {
+        $usuario = $this->usuarioModel->find($usuarioId);
+
+        if (! $usuario) {
+            return [];
+        }
+
+        $permissoes = $this->cargoPermissaoModel
+            ->select('permissao.codigo')
+            ->join('permissao', 'permissao.id = cargo_permissao.permissao_id')
+            ->where('cargo_permissao.cargo_id', $usuario['cargo_id'])
+            ->findAll();
+
+        return array_column($permissoes, 'codigo');
+    }
 }
