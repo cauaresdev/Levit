@@ -23,4 +23,8 @@ $routes->group('api/v1', function ($routes) {
     $routes->post('modulos/(:segment)/registros', 'RegistroController::criar/$1', ['filter' => 'auth']);
     $routes->put('modulos/(:segment)/registros/(:segment)', 'RegistroController::atualizar/$1/$2', ['filter' => 'auth']);
     $routes->delete('modulos/(:segment)/registros/(:segment)', 'RegistroController::excluir/$1/$2', ['filter' => 'auth']);
+
+    $routes->post('modulos/(:segment)/arquivos', 'ArquivoController::enviar/$1', ['filter' => 'auth']);
+    $routes->get('modulos/(:segment)/arquivos/(:segment)', 'ArquivoController::baixar/$1/$2', ['filter' => 'auth']);
+    $routes->delete('modulos/(:segment)/arquivos/(:segment)', 'ArquivoController::excluir/$1/$2', ['filter' => 'auth']);
 });
