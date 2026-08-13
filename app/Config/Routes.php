@@ -18,4 +18,9 @@ $routes->group('api/v1', function ($routes) {
     $routes->put('modulos/(:segment)/campos/reordenar', 'ModuloController::reordenarCampos/$1', ['filter' => 'auth:gerenciar_modulos']);
     $routes->put('modulos/(:segment)/campos/(:segment)', 'ModuloController::atualizarCampo/$1/$2', ['filter' => 'auth:gerenciar_modulos']);
     $routes->delete('modulos/(:segment)/campos/(:segment)', 'ModuloController::excluirCampo/$1/$2', ['filter' => 'auth:gerenciar_modulos']);
+
+    $routes->get('modulos/(:segment)/registros', 'RegistroController::listar/$1', ['filter' => 'auth']);
+    $routes->post('modulos/(:segment)/registros', 'RegistroController::criar/$1', ['filter' => 'auth']);
+    $routes->put('modulos/(:segment)/registros/(:segment)', 'RegistroController::atualizar/$1/$2', ['filter' => 'auth']);
+    $routes->delete('modulos/(:segment)/registros/(:segment)', 'RegistroController::excluir/$1/$2', ['filter' => 'auth']);
 });
