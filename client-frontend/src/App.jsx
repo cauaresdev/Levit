@@ -6,6 +6,9 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import Modules from './pages/Modules';
+import ModuleForm from './pages/ModuleForm';
+import ModuleRecords from './pages/ModuleRecords';
 
 function App() {
   return (
@@ -17,9 +20,31 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/modulos" element={
+            <ProtectedRoute>
+              <Modules />
+            </ProtectedRoute>
+          } />
+          <Route path="/modulos/novo" element={
+            <ProtectedRoute>
+              <ModuleForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/modulos/:id/editar" element={
+            <ProtectedRoute>
+              <ModuleForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/modulos/:id/registros" element={
+            <ProtectedRoute>
+              <ModuleRecords />
             </ProtectedRoute>
           } />
         </Routes>

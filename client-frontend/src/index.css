@@ -6,4 +6,15 @@
   --color-light-text: #666666;
   --color-background: #F3F3F3;
   --color-divider: #E5E5E5;
+
+  --animate-slide-in: slide-in 0.25s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }

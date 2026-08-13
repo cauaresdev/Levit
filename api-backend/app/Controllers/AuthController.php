@@ -111,30 +111,4 @@ class AuthController extends BaseApiController
 
         return $this->respondSuccess(null, 200);
     }
-
-    public function me()
-    {
-        $user = service('authenticatedUser');
-
-        $usuario = (new \App\Models\UsuarioModel())->find($user->id);
-
-        if (! $usuario) {
-            return $this->respondError('Usuário não encontrado.', 404);
-        }
-
-        $empresa = (new \App\Models\EmpresaModel())->find($usuario['empresa_id']);
-
-        return $this->respondSuccess([
-            'usuario' => [
-                'id'        => $usuario['id'],
-                'nome'      => $usuario['nome'],
-                'email'     => $usuario['email'],
-                'criado_em' => $usuario['criado_em'],
-            ],
-            'empresa' => [
-                'id'   => $empresa['id'],
-                'nome' => $empresa['nome'],
-            ],
-        ]);
-    }
 }
