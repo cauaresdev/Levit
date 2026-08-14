@@ -75,6 +75,10 @@ class AuthService
             'senha_hash' => password_hash($dados['senha'], PASSWORD_BCRYPT, ['cost' => 10]),
         ]);
 
+        $this->empresaModel->update($empresaId, [
+            'administrador_principal_id' => $usuarioId,
+        ]);
+
         $db->transComplete();
 
         if ($db->transStatus() === false) {
@@ -144,6 +148,28 @@ class AuthService
 
         if (! $usuario) {
             return [];
+        }
+
+        $permissoes = $this->cargoPermissaoModel
+            ->select('permissao.codigo')
+            ->join('permissao', 'permissao.id = cargo_permissao.permissao_id')
+            ->where('cargo_permissao.cargo_id', $usuario['cargo_id'])
+            ->findAll();
+
+        return array_column($permissoes, 'codigo');
+    }
+
+    /**
+     * Retorna a lista de permissões do usuário, ou `null` se ele não
+     * existir mais (ex: foi removido da equipe). Uma única consulta,
+     * reaproveitada pelo AuthFilter em toda requisição autenticada.
+     */
+    public function dadosDeAutorizacao(string $usuarioId): ?array
+    {
+        $usuario = $this->usuarioModel->find($usuarioId);
+
+        if (! $usuario) {
+            return null;
         }
 
         $permissoes = $this->cargoPermissaoModel
