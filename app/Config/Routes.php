@@ -33,4 +33,12 @@ $routes->group('api/v1', function ($routes) {
     $routes->get('recrutamento/candidatos/(:segment)', 'CandidatoController::detalhes/$1', ['filter' => 'auth']);
     $routes->put('recrutamento/candidatos/(:segment)/fase', 'CandidatoController::moverFase/$1', ['filter' => 'auth']);
     $routes->delete('recrutamento/candidatos/(:segment)', 'CandidatoController::excluir/$1', ['filter' => 'auth:gerenciar_recrutamento']);
+
+    $routes->get('cargos', 'CargoController::listar', ['filter' => 'auth:gerenciar_equipe']);
+    $routes->post('cargos', 'CargoController::criar', ['filter' => 'auth:gerenciar_equipe']);
+
+    $routes->post('equipe/convidar', 'EquipeController::convidar', ['filter' => 'auth:gerenciar_equipe']);
+    $routes->get('equipe', 'EquipeController::listarMembros', ['filter' => 'auth:gerenciar_equipe']);
+    $routes->delete('equipe/(:segment)', 'EquipeController::removerMembro/$1', ['filter' => 'auth:gerenciar_equipe']);
+    $routes->post('publico/convite/aceitar', 'EquipeController::aceitarConvite', ['filter' => 'ratelimit']);
 });

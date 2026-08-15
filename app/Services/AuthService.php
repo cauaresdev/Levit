@@ -180,4 +180,30 @@ class AuthService
 
         return array_column($permissoes, 'codigo');
     }
+
+    /**
+     * Monta a resposta padrão de autenticação (token + usuário + empresa),
+     * reaproveitada por qualquer fluxo que autentique alguém: cadastro,
+     * login, ou aceite de convite.
+     */
+    public function montarRespostaAutenticacao(array $usuario, array $empresa): array
+    {
+        $token = (new JwtService())->gerar([
+            'sub'        => $usuario['id'],
+            'empresa_id' => $empresa['id'],
+        ]);
+
+        return [
+            'token'   => $token,
+            'usuario' => [
+                'id'    => $usuario['id'],
+                'nome'  => $usuario['nome'],
+                'email' => $usuario['email'],
+            ],
+            'empresa' => [
+                'id'   => $empresa['id'],
+                'nome' => $empresa['nome'],
+            ],
+        ];
+    }
 }
