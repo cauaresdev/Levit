@@ -14,7 +14,7 @@ class CandidatoController extends BaseApiController
         $this->candidatoService = new CandidatoService();
     }
 
-    public function candidatar($empresaId)
+    public function candidatar($moduloId)
     {
         $dados = $this->request->getJSON(true) ?? [];
 
@@ -31,27 +31,33 @@ class CandidatoController extends BaseApiController
         }
 
         try {
-            $candidato = $this->candidatoService->criarCandidatura($empresaId, $dados);
+            $candidato = $this->candidatoService->criarCandidatura($moduloId, $dados);
         } catch (NaoEncontradoException $e) {
             return $this->respondError($e->getMessage(), 404);
         } catch (\DomainException $e) {
             return $this->respondError($e->getMessage(), 409);
+        } catch (\RuntimeException $e) {
+            return $this->respondError($e->getMessage(), 500);
         }
 
         return $this->respondSuccess($candidato, 201);
     }
 
-    public function kanban()
+    public function kanban($moduloId)
     {
-        $kanban = $this->candidatoService->listarKanban(service('authenticatedUser')->empresaId);
+        try {
+            $kanban = $this->candidatoService->listarKanban($moduloId, service('authenticatedUser')->empresaId);
+        } catch (NaoEncontradoException $e) {
+            return $this->respondError($e->getMessage(), 404);
+        }
 
         return $this->respondSuccess($kanban, 200);
     }
 
-    public function detalhes($candidatoId)
+    public function detalhes($moduloId, $candidatoId)
     {
         try {
-            $candidato = $this->candidatoService->buscarCandidato($candidatoId, service('authenticatedUser')->empresaId);
+            $candidato = $this->candidatoService->buscarCandidato($candidatoId, $moduloId, service('authenticatedUser')->empresaId);
         } catch (NaoEncontradoException $e) {
             return $this->respondError($e->getMessage(), 404);
         }
@@ -59,13 +65,19 @@ class CandidatoController extends BaseApiController
         return $this->respondSuccess($candidato, 200);
     }
 
-    public function moverFase($candidatoId)
+    public function moverFase($moduloId, $candidatoId)
     {
         $dados = $this->request->getJSON(true) ?? [];
         $user  = service('authenticatedUser');
 
         try {
-            $candidato = $this->candidatoService->moverFase($candidatoId, $user->empresaId, $dados['fase'] ?? '', $user->id);
+            $candidato = $this->candidatoService->moverFase(
+                $candidatoId,
+                $moduloId,
+                $user->empresaId,
+                $dados['fase_id'] ?? '',
+                $user->id
+            );
         } catch (NaoEncontradoException $e) {
             return $this->respondError($e->getMessage(), 404);
         } catch (\DomainException $e) {
@@ -75,10 +87,10 @@ class CandidatoController extends BaseApiController
         return $this->respondSuccess($candidato, 200);
     }
 
-    public function excluir($candidatoId)
+    public function excluir($moduloId, $candidatoId)
     {
         try {
-            $this->candidatoService->excluirCandidato($candidatoId, service('authenticatedUser')->empresaId);
+            $this->candidatoService->excluirCandidato($candidatoId, $moduloId, service('authenticatedUser')->empresaId);
         } catch (NaoEncontradoException $e) {
             return $this->respondError($e->getMessage(), 404);
         }

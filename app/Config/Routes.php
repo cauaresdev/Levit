@@ -29,10 +29,14 @@ $routes->group('api/v1', function ($routes) {
     $routes->delete('modulos/(:segment)/arquivos/(:segment)', 'ArquivoController::excluir/$1/$2', ['filter' => 'auth']);
 
     $routes->post('publico/candidatura/(:segment)', 'CandidatoController::candidatar/$1', ['filter' => 'ratelimit']);
-    $routes->get('recrutamento/kanban', 'CandidatoController::kanban', ['filter' => 'auth']);
-    $routes->get('recrutamento/candidatos/(:segment)', 'CandidatoController::detalhes/$1', ['filter' => 'auth']);
-    $routes->put('recrutamento/candidatos/(:segment)/fase', 'CandidatoController::moverFase/$1', ['filter' => 'auth']);
-    $routes->delete('recrutamento/candidatos/(:segment)', 'CandidatoController::excluir/$1', ['filter' => 'auth:gerenciar_recrutamento']);
+    $routes->get('modulos/(:segment)/kanban', 'CandidatoController::kanban/$1', ['filter' => 'auth']);
+    $routes->get('modulos/(:segment)/candidatos/(:segment)', 'CandidatoController::detalhes/$1/$2', ['filter' => 'auth']);
+    $routes->put('modulos/(:segment)/candidatos/(:segment)/fase', 'CandidatoController::moverFase/$1/$2', ['filter' => 'auth']);
+    $routes->delete('modulos/(:segment)/candidatos/(:segment)', 'CandidatoController::excluir/$1/$2', ['filter' => 'auth:gerenciar_recrutamento']);
+    $routes->post('modulos/(:segment)/fases', 'ModuloController::adicionarFase/$1', ['filter' => 'auth:gerenciar_modulos']);
+    $routes->put('modulos/(:segment)/fases/reordenar', 'ModuloController::reordenarFases/$1', ['filter' => 'auth:gerenciar_modulos']);
+    $routes->put('modulos/(:segment)/fases/(:segment)', 'ModuloController::atualizarFase/$1/$2', ['filter' => 'auth:gerenciar_modulos']);
+    $routes->delete('modulos/(:segment)/fases/(:segment)', 'ModuloController::excluirFase/$1/$2', ['filter' => 'auth:gerenciar_modulos']);
 
     $routes->get('cargos', 'CargoController::listar', ['filter' => 'auth:gerenciar_equipe']);
     $routes->post('cargos', 'CargoController::criar', ['filter' => 'auth:gerenciar_equipe']);
