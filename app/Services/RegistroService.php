@@ -6,6 +6,7 @@ use App\Exceptions\NaoEncontradoException;
 use App\Models\CampoModuloModel;
 use App\Models\ModuloModel;
 use App\Models\RegistroModel;
+use CodeIgniter\Events\Events;
 
 class RegistroService
 {
@@ -70,6 +71,12 @@ class RegistroService
             'criado_por' => $usuarioId,
         ]);
 
+        Events::trigger('registro_criado', [
+            'modulo_id'      => $moduloId,
+            'registro_id'    => $registroId,
+            'dados_registro' => $dadosValidados,
+        ]);
+
         return $this->buscarRegistro($registroId, $moduloId, $empresaId);
     }
 
@@ -85,6 +92,12 @@ class RegistroService
             'atualizado_por' => $usuarioId,
         ]);
 
+        Events::trigger('registro_atualizado', [
+            'modulo_id'      => $moduloId,
+            'registro_id'    => $registroId,
+            'dados_registro' => $dadosValidados,
+        ]);
+
         return $this->buscarRegistro($registroId, $moduloId, $empresaId);
     }
 
@@ -92,6 +105,12 @@ class RegistroService
     {
         $this->buscarRegistro($registroId, $moduloId, $empresaId);
         $this->registroModel->delete($registroId);
+
+        Events::trigger('registro_excluido', [
+            'modulo_id'      => $moduloId,
+            'registro_id'    => $registroId,
+            'dados_registro' => $registro['dados'],
+        ]);
     }
 
     /**

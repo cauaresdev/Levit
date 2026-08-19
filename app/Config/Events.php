@@ -55,3 +55,15 @@ Events::on('pre_system', static function (): void {
         }
     }
 });
+
+Events::on('registro_criado', static function (array $payload) {
+    service('queue')->push('automacoes', 'processar-automacoes', array_merge($payload, ['gatilho' => 'criacao']));
+});
+
+Events::on('registro_atualizado', static function (array $payload) {
+    service('queue')->push('automacoes', 'processar-automacoes', array_merge($payload, ['gatilho' => 'atualizacao']));
+});
+
+Events::on('registro_excluido', static function (array $payload) {
+    service('queue')->push('automacoes', 'processar-automacoes', array_merge($payload, ['gatilho' => 'exclusao']));
+});

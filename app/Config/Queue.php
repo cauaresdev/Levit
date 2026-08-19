@@ -21,6 +21,7 @@ use CodeIgniter\Queue\Handlers\RabbitMQHandler;
 use CodeIgniter\Queue\Handlers\RedisHandler;
 use CodeIgniter\Queue\Interfaces\JobInterface;
 use CodeIgniter\Queue\Interfaces\QueueInterface;
+use App\Jobs\ProcessarAutomacoes;
 
 class Queue extends BaseQueue
 {
@@ -110,6 +111,8 @@ class Queue extends BaseQueue
      *
      * @var array<string, class-string<JobInterface>>
      */
-    public array $jobHandlers = [];
+    public array $jobHandlers = [
+        'processar-automacoes' => ProcessarAutomacoes::class,
+    ];
 
 }
