@@ -7,6 +7,7 @@ use App\Models\ModuloModel;
 use App\Exceptions\NaoEncontradoException;
 use App\Models\FaseRecrutamentoModel;
 use App\Models\CandidatoModel;
+use App\Models\AutomacaoModel;
 
 class ModuloService
 {
@@ -16,6 +17,7 @@ class ModuloService
     protected CampoModuloModel $campoModuloModel;
     protected FaseRecrutamentoModel $faseRecrutamentoModel;
     protected CandidatoModel $candidatoModel;
+    protected AutomacaoModel $automacaoModel;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class ModuloService
         $this->campoModuloModel      = new CampoModuloModel();
         $this->faseRecrutamentoModel = new FaseRecrutamentoModel();
         $this->candidatoModel        = new CandidatoModel();
+        $this->automacaoModel        = new AutomacaoModel();
     }
 
     /**
@@ -309,6 +312,16 @@ class ModuloService
         if ((int) $linha->total > 0) {
             throw new \DomainException('Não é possível excluir um campo que já possui registros preenchidos.');
         }
+
+        if ((int) $linha->total > 0) {
+            throw new \DomainException('Não é possível excluir um campo que já possui registros preenchidos.');
+        }
+
+        if ($this->automacaoModel->where('campo_condicao_id', $campoId)->first()) {
+            throw new \DomainException('Não é possível excluir um campo usado como condição em uma automação.');
+        }
+
+        $this->campoModuloModel->delete($campoId);
 
         $this->campoModuloModel->delete($campoId);
     }
