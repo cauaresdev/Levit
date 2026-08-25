@@ -214,4 +214,15 @@ class ModuloController extends BaseApiController
 
         return $this->respondSuccess(null, 200);
     }
+
+    public function detalhes($moduloId)
+    {
+        try {
+            $modulo = $this->moduloService->buscarModuloComCampos($moduloId, service('authenticatedUser')->empresaId);
+        } catch (NaoEncontradoException $e) {
+            return $this->respondError($e->getMessage(), 404);
+        }
+
+        return $this->respondSuccess($modulo, 200);
+    }
 }

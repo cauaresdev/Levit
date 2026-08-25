@@ -6,6 +6,7 @@ use CodeIgniter\Config\BaseService;
 use App\Libraries\AuthenticatedUser;
 use App\Services\Email\EmailServiceInterface;
 use App\Services\Email\BrevoEmailService;
+use App\Services\Email\LogEmailService;
 
 /**
  * Services Configuration file.
@@ -53,12 +54,15 @@ class Services extends BaseService
         return new BackblazeStorageService();
     }
 
-        public static function email(bool $getShared = true): EmailServiceInterface
+    public static function email(bool $getShared = true): EmailServiceInterface
     {
         if ($getShared) {
             return static::getSharedInstance('email');
         }
 
-        return new BrevoEmailService();
+        return match (env('EMAIL_PROVIDER', 'brevo')) {
+            'log'   => new LogEmailService(),
+            default => new BrevoEmailService(),
+        };
     }
 }

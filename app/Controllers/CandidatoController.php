@@ -97,4 +97,27 @@ class CandidatoController extends BaseApiController
 
         return $this->respondSuccess(null, 200);
     }
+
+    public function kanbanGlobal()
+    {
+        $kanban = $this->candidatoService->listarKanbanGlobal(service('authenticatedUser')->empresaId);
+
+        return $this->respondSuccess($kanban, 200);
+    }
+
+    public function moverFaseGlobal($candidatoId)
+    {
+        $dados = $this->request->getJSON(true) ?? [];
+        $user  = service('authenticatedUser');
+
+        try {
+            $candidato = $this->candidatoService->moverFaseGlobalPorNome($candidatoId, $user->empresaId, $dados['fase'] ?? '', $user->id);
+        } catch (NaoEncontradoException $e) {
+            return $this->respondError($e->getMessage(), 404);
+        } catch (\DomainException $e) {
+            return $this->respondError($e->getMessage(), 422);
+        }
+
+        return $this->respondSuccess($candidato, 200);
+    }
 }
