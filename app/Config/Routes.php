@@ -57,4 +57,8 @@ $routes->group('api/v1', function ($routes) {
     $routes->get("modulos/({$uuid})/automacoes", 'AutomacaoController::listar/$1', ['filter' => 'auth:gerenciar_automacoes']);
     $routes->put("modulos/({$uuid})/automacoes/({$uuid})/ativo", 'AutomacaoController::alternarAtivo/$1/$2', ['filter' => 'auth:gerenciar_automacoes']);
     $routes->delete("modulos/({$uuid})/automacoes/({$uuid})", 'AutomacaoController::excluir/$1/$2', ['filter' => 'auth:gerenciar_automacoes']);
+
+    $routes->get('backup/json', 'BackupController::exportarJson', ['filter' => 'auth:gerenciar_dados']);
+    $routes->get("modulos/({$uuid})/exportar-csv", 'BackupController::exportarCsv/$1', ['filter' => 'auth:gerenciar_dados']);
+    $routes->post('backup/resetar', 'BackupController::resetarFabrica', ['filter' => 'auth:gerenciar_dados']);
 });
