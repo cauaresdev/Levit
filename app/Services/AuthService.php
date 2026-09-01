@@ -54,8 +54,9 @@ class AuthService
         ]);
 
         $cargoAdminId = $this->cargoModel->insert([
-            'empresa_id' => $empresaId,
-            'nome'       => 'Admin',
+            'empresa_id'   => $empresaId,
+            'nome'         => 'Admin',
+            'acesso_total' => true,
         ]);
 
         $todasPermissoes = $this->permissaoModel->findAll();
@@ -159,10 +160,9 @@ class AuthService
         return array_column($permissoes, 'codigo');
     }
 
-    /**
-     * Retorna a lista de permissões do usuário, ou `null` se ele não
-     * existir mais (ex: foi removido da equipe). Uma única consulta,
-     * reaproveitada pelo AuthFilter em toda requisição autenticada.
+        /**
+     * Retorna cargo, permissões globais e a flag de acesso total do
+     * usuário — ou `null` se ele não existir mais.
      */
     public function dadosDeAutorizacao(string $usuarioId): ?array
     {
@@ -172,13 +172,19 @@ class AuthService
             return null;
         }
 
+        $cargo = $this->cargoModel->find($usuario['cargo_id']);
+
         $permissoes = $this->cargoPermissaoModel
             ->select('permissao.codigo')
             ->join('permissao', 'permissao.id = cargo_permissao.permissao_id')
             ->where('cargo_permissao.cargo_id', $usuario['cargo_id'])
             ->findAll();
 
-        return array_column($permissoes, 'codigo');
+                return [
+            'cargo_id'     => $usuario['cargo_id'],
+            'acesso_total' => ($cargo['acesso_total'] ?? 'f') === 't',
+            'permissoes'   => array_column($permissoes, 'codigo'),
+        ];
     }
 
     /**
