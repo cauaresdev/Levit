@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController
+class Home extends BaseApiController
 {
     public function index()
     {
@@ -14,5 +14,10 @@ class Home extends BaseController
                 'nivel_bateria' => '100%'
             ]
         ]);
+    }
+
+    public function naoEncontrado()
+    {
+        return $this->respondError('Recurso não encontrado.', 404);
     }
 }
