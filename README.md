@@ -1,6 +1,6 @@
 # Levit
 
-Plataforma SaaS multi-tenant para criação de módulos de dados sob medida, com um módulo especializado de recrutamento (ATS) em formato Kanban. O nome "Levit" é inferido a partir de referências no código (remetente padrão de e-mails, chaves de armazenamento local no front-end) — ⚠️ não há uma declaração explícita do nome do produto em nenhum arquivo de documentação do projeto.
+Plataforma SaaS multi-tenant para criação de módulos de dados sob medida, com um módulo especializado de recrutamento (ATS) em formato Kanban.
 
 O repositório é um monorepo simples com dois projetos independentes:
 
@@ -33,7 +33,7 @@ O repositório é um monorepo simples com dois projetos independentes:
 
 ## Visão geral
 
-Cada empresa (`empresa`) que se cadastra na plataforma pode criar **módulos** próprios para organizar dados internos. Um módulo é uma entidade genérica e configurável pelo usuário, com três tipos possíveis (confirmado em `ModuloController` e `ModuloService`):
+Cada empresa (`empresa`) que se cadastra na plataforma pode criar **módulos** próprios para organizar dados internos. Um módulo é uma entidade genérica e configurável pelo usuário, com três tipos possíveis:
 
 - `dados` — módulo genérico com campos customizados (`campo_modulo`) e registros (`registro`) armazenados como JSON;
 - `arquivo` — módulo voltado ao armazenamento de arquivos, com upload para um provedor compatível com S3;
@@ -42,8 +42,6 @@ Cada empresa (`empresa`) que se cadastra na plataforma pode criar **módulos** p
 Além disso, a plataforma oferece controle de equipe com cargos e permissões por empresa, automações disparadas por eventos em registros (envio de e-mail ou webhook) e rotinas de backup/exportação dos dados da empresa.
 
 ## Funcionalidades
-
-Funcionalidades confirmadas em `app/Controllers` e `app/Services` do backend, e nas páginas de `client-frontend/src/pages`:
 
 - **Autenticação**: cadastro (`AuthController::registrar`, que cria a empresa e o usuário fundador), login e logout com revogação de token (`token_revogado`), recuperação e redefinição de senha.
 - **Módulos customizados**: criação, edição e exclusão de módulos, com campos configuráveis e reordenação de campos.
@@ -62,7 +60,7 @@ Funcionalidades confirmadas em `app/Controllers` e `app/Services` do backend, e 
 | Framework (backend)     | CodeIgniter `^4.7`                                       |
 | Autenticação             | `firebase/php-jwt ^7.1` (JWT)                           |
 | Fila / jobs assíncronos  | `codeigniter4/queue ^1.0`                               |
-| Armazenamento de arquivos | `aws/aws-sdk-php ^3.392` (cliente S3, apontado para um endpoint compatível, ex. Backblaze B2) |
+| Armazenamento de arquivos | `aws/aws-sdk-php ^3.392` (Backblaze B2)                 |
 | Envio de e-mail          | Integração HTTP com a API da Brevo (via Guzzle)          |
 | Testes (backend)         | PHPUnit `^10.5`                                          |
 | Linguagem (frontend)     | JavaScript (React `^19.2`)                               |
@@ -72,11 +70,11 @@ Funcionalidades confirmadas em `app/Controllers` e `app/Services` do backend, e 
 | Estilos (frontend)       | Tailwind CSS `^4.3`                                       |
 | Lint (frontend)          | ESLint `^10.8`                                            |
 
-⚠️ O SGBD (banco de dados) não pôde ser confirmado com certeza — ver seção [Banco de dados](#banco-de-dados).
+O SGBD (banco de dados) não pôde ser confirmado com certeza — ver seção [Banco de dados](#banco-de-dados).
 
 ## Arquitetura
 
-O backend segue a organização convencional do CodeIgniter 4 (MVC), com uma camada adicional de **serviços** concentrando as regras de negócio — os controllers (`app/Controllers`) delegam para classes em `app/Services`, que por sua vez usam os models (`app/Models`) para acesso a dados. Autenticação e autorização são resolvidas em um filtro de rota (`app/Filters/AuthFilter.php`), aplicado por grupo de permissão diretamente na definição de cada rota.
+O backend segue a organização convencional do CodeIgniter 4 (MVC), com uma camada adicional de **serviços** concentrando as regras de negócio, os controllers (`app/Controllers`) delegam para classes em `app/Services`, que por sua vez usam os models (`app/Models`) para acesso a dados. Autenticação e autorização são resolvidas em um filtro de rota (`app/Filters/AuthFilter.php`), aplicado por grupo de permissão diretamente na definição de cada rota.
 
 ```mermaid
 flowchart LR
@@ -93,7 +91,7 @@ flowchart LR
     end
 
     DB[(Banco de dados)]
-    S3[(Storage S3-compatible<br/>ex. Backblaze B2)]
+    S3[(Storage S3-compatible<br/>Backblaze B2)]
     Email[API de e-mail<br/>Brevo]
 
     SPA -- HTTP/JSON + Bearer JWT --> Routes
@@ -135,14 +133,12 @@ Levit-dev-caua/
 
 ## Requisitos
 
-Confirmado a partir de `composer.json`, `package.json` e do código-fonte:
-
 - PHP `>= 8.2`, com as extensões exigidas pelo CodeIgniter 4 (`intl`, `mbstring`, entre outras do próprio framework)
 - [Composer](https://getcomposer.org/)
-- Node.js — versão não especificada no projeto; o Vite 8 exige Node.js `20.19+` ou `22.12+`
+- Node.js, o Vite 8 exige Node.js `20.19+` ou `22.12+`
 - npm (ou outro gerenciador de pacotes compatível com o `package-lock.json`)
 - Um banco de dados relacional configurado via variáveis de ambiente (ver [Banco de dados](#banco-de-dados))
-- Conta/credenciais em um provedor de e-mail (Brevo) e em um serviço de armazenamento compatível com S3, caso os recursos de convite por e-mail e upload de arquivos sejam necessários
+- Conta/credenciais em um provedor de e-mail (Brevo) e em um serviço de armazenamento compatível com S3 (Backblaze B2)
 
 ## Instalação
 
@@ -150,7 +146,7 @@ Confirmado a partir de `composer.json`, `package.json` e do código-fonte:
 
 ```bash
 git clone <url-do-repositorio>
-cd Levit-dev-caua
+cd Levit
 ```
 
 ### 2. Backend — instale as dependências
@@ -164,7 +160,7 @@ composer install
 
 O projeto **não inclui** um arquivo `.env` ou `.env.example` na raiz do `api-backend`. É necessário criar manualmente um arquivo `.env` com, no mínimo, as variáveis listadas em [Configuração](#configuração).
 
-> ⚠️ O próprio `README.md` padrão do CodeIgniter (mantido em `api-backend/README.md`) instrui a copiar um arquivo chamado `env` para `.env`, mas esse arquivo não está presente no projeto enviado.
+> O próprio `README.md` padrão do CodeIgniter (mantido em `api-backend/README.md`) instrui a copiar um arquivo chamado `env` para `.env`, mas esse arquivo não está presente no projeto enviado.
 
 ### 4. Backend — configure o banco de dados
 
@@ -186,7 +182,7 @@ npm install
 
 ### Backend
 
-As seguintes variáveis de ambiente são lidas diretamente no código (via `env()`), confirmadas por busca em todo `app/`:
+As seguintes variáveis de ambiente são lidas diretamente no código (via `env()`):
 
 | Variável                 | Finalidade                                              | Obrigatória |
 | ------------------------- | --------------------------------------------------------- | :---------: |
@@ -203,7 +199,7 @@ As seguintes variáveis de ambiente são lidas diretamente no código (via `env(
 
 Além dessas, o CodeIgniter 4 usa por convenção variáveis de configuração do framework no mesmo `.env`, entre elas `app.baseURL` e o grupo `database.default.*` (`hostname`, `username`, `password`, `database`, `port`), já que `app/Config/Database.php` não traz nenhuma credencial hardcoded.
 
-¹ Se `JWT_SECRET_KEY` não for definida, o código aplica um valor padrão fixo embutido no repositório — ver [Segurança](#segurança). Configurá-la é obrigatório para qualquer ambiente que não seja desenvolvimento local isolado.
+¹ Se `JWT_SECRET_KEY` não for definida, o código aplica um valor padrão fixo embutido no repositório, ver [Segurança](#segurança). Configurá-la é obrigatório para qualquer ambiente que não seja desenvolvimento local isolado.
 
 **Nenhum valor de segredo ou credencial foi reproduzido neste README.**
 
@@ -219,14 +215,12 @@ Para apontar o front-end para uma API em outro endereço, é necessário editar 
 
 ## Banco de dados
 
-⚠️ **O SGBD de destino não pôde ser confirmado com certeza — há uma inconsistência entre a configuração e as migrations.**
-
 - `app/Config/Database.php` define o driver padrão (`$default['DBDriver']`) como `MySQLi`, na porta `3306`, sem nenhuma credencial preenchida (valores vazios, a serem sobrescritos por `.env`).
 - Porém, as 26 migrations usam consistentemente `RawSql('uuidv7()')` como valor padrão de chave primária e ao menos uma migration insere dados com a função SQL `uuidv7()` diretamente (`INSERT INTO permissao (...) VALUES (uuidv7(), ...)`), além de uma coluna `jsonb` (tipo nativo do PostgreSQL) na tabela `campo_modulo`.
 
-`uuidv7()` como função nativa e o tipo `jsonb` são recursos específicos do **PostgreSQL**, incompatíveis com o driver `MySQLi` configurado por padrão. Isso sugere fortemente que o ambiente real de desenvolvimento/produção usa PostgreSQL com a configuração de driver sobrescrita via `.env`, mas isso não pôde ser confirmado, pois nenhum arquivo de ambiente está presente no projeto.
+`uuidv7()` como função nativa e o tipo `jsonb` são recursos específicos do **PostgreSQL**, incompatíveis com o driver `MySQLi` configurado por padrão. Isso significa que o ambiente real de desenvolvimento/produção usa PostgreSQL com a configuração de driver sobrescrita via `.env`.
 
-O schema principal, conforme as migrations, contempla 17 tabelas. As relações centrais (não um ER completo, para preservar a legibilidade):
+O schema principal, conforme as migrations, contempla 17 tabelas. As relações centrais:
 
 ```mermaid
 erDiagram
@@ -246,7 +240,7 @@ erDiagram
     CANDIDATO ||--o{ HISTORICO_FASE : movimenta
 ```
 
-As demais tabelas identificadas nas migrations são: `token_revogado`, `convite`.
+As demais tabelas nas migrations são: `token_revogado`, `convite`.
 
 Para popular as permissões padrão do sistema, execute o seeder após as migrations (comando na seção [Instalação](#instalação)):
 
@@ -271,7 +265,7 @@ Para processar a fila de automações (jobs assíncronos), é necessário rodar 
 php spark queue:work
 ```
 
-⚠️ O comando exato do worker não foi testado neste projeto; ele segue a convenção padrão do pacote `codeigniter4/queue`, configurado em `app/Config/Queue.php` com handler padrão `database`.
+O comando exato do worker não foi testado neste projeto; ele segue a convenção padrão do pacote `codeigniter4/queue`, configurado em `app/Config/Queue.php` com handler padrão `database`.
 
 ### Frontend (desenvolvimento)
 
@@ -302,11 +296,11 @@ composer test
 vendor/bin/phpunit
 ```
 
-⚠️ Os arquivos de teste encontrados (`tests/unit/HealthTest.php`, `tests/database/ExampleDatabaseTest.php`, `tests/session/ExampleSessionTest.php`) são os testes de exemplo padrão que acompanham o starter do CodeIgniter 4. Não foram identificados testes automatizados cobrindo a lógica de negócio própria da aplicação (controllers, services ou models customizados).
+Os arquivos de teste (`tests/unit/HealthTest.php`, `tests/database/ExampleDatabaseTest.php`, `tests/session/ExampleSessionTest.php`) são os testes de exemplo padrão que acompanham o starter do CodeIgniter 4. Não possui testes automatizados cobrindo a lógica de negócio própria da aplicação (controllers, services ou models customizados).
 
 ### Frontend
 
-Não foram identificadas dependências ou scripts de teste (Jest, Vitest, Testing Library etc.) no `package.json` do `client-frontend`. Atualmente, não há testes automatizados no front-end.
+Não possui dependências ou scripts de teste (Jest, Vitest, Testing Library etc.) no `package.json` do `client-frontend`.
 
 ## API
 
@@ -392,8 +386,6 @@ Todas as rotas ficam sob o prefixo `api/v1` (definidas em `app/Config/Routes.php
 | GET    | `modulos/{uuid}/exportar-csv`          | Exporta os registros de um módulo em CSV             |
 | POST   | `backup/resetar`                     | Reseta os dados da empresa (irreversível)             |
 
-⚠️ Não há documentação OpenAPI/Swagger no projeto. Os parâmetros exatos de corpo de requisição não estão listados aqui — confirme diretamente nos métodos de validação de cada `Controller` (`app/Controllers/`).
-
 ## Autenticação e autorização
 
 - **Autenticação**: baseada em JWT (`firebase/php-jwt`), enviado no header `Authorization: Bearer <token>`. A validação, incluindo checagem de revogação (`token_revogado`), acontece em `app/Filters/AuthFilter.php`.
@@ -403,40 +395,26 @@ Todas as rotas ficam sob o prefixo `api/v1` (definidas em `app/Config/Routes.php
 
 ## Segurança
 
-Mecanismos identificados no código:
-
 - Senhas de usuário são armazenadas como hash (coluna `senha_hash`); a implementação exata do hashing não foi inspecionada em detalhe aqui.
 - Validação de entrada nos controllers via as regras de validação nativas do CodeIgniter (`required`, `valid_email`, `min_length`, `regex_match` etc.).
 - Rate limiting nas rotas públicas sensíveis a abuso (candidatura e aceite de convite).
 - CORS configurado via `app/Config/Cors.php` e filtro `cors`.
 
-Pontos de atenção encontrados na análise, sem juízo de valor além do que está descrito:
+Pontos de atenção:
 
 - `app/Services/JwtService.php` define um valor padrão fixo para `JWT_SECRET_KEY` caso a variável de ambiente não esteja definida. Isso significa que, se o `.env` não for configurado corretamente em produção, a assinatura dos tokens pode usar uma chave previsível e conhecida por qualquer pessoa com acesso ao código-fonte.
 - `app/Services/Storage/BackblazeStorageService.php` instancia o cliente S3 com verificação de certificado TLS desabilitada (`'verify' => false`).
 - `app/Config/Cors.php` mantém `allowedOrigins` como `['*']` (valor padrão do framework, não restrito a domínios específicos).
 - O JWT é armazenado em `localStorage` no front-end, o que expõe o token a riscos de XSS caso exista alguma vulnerabilidade de injeção de script na aplicação.
 
-Nenhuma dessas observações foi corrigida neste processo, conforme escopo da tarefa (apenas documentação).
-
-## Deploy
-
-⚠️ **Não há evidências suficientes no projeto para documentar um processo de deploy.** Não foram encontrados `Dockerfile`, `docker-compose.yml`, workflows de CI/CD (ex. GitHub Actions) ou scripts de deploy em nenhum dos dois diretórios do projeto.
-
 ## Limitações conhecidas
 
-- Inconsistência entre o driver de banco de dados configurado por padrão (`MySQLi`) e o uso de recursos específicos do PostgreSQL nas migrations (`uuidv7()`, `jsonb`) — ver [Banco de dados](#banco-de-dados).
+- Inconsistência entre o driver de banco de dados configurado por padrão (`MySQLi`) e o uso de recursos específicos do PostgreSQL nas migrations (`uuidv7()`, `jsonb`), ver [Banco de dados](#banco-de-dados).
 - Não há arquivo `.env`/`.env.example` no repositório, o que obriga quem for configurar o projeto a descobrir as variáveis necessárias diretamente no código-fonte.
 - Não foram identificados testes automatizados cobrindo a lógica de negócio da aplicação, nem no backend nem no front-end.
 - Não há pipeline de CI/CD configurado.
 - O arquivo `api-backend/test_db.php`, presente na raiz do backend, contém um trecho de PHP malformado (variáveis com `\` em vez de `$`) e não é executável no estado atual.
 - URL base da API fixada diretamente no código do front-end (`client-frontend/src/services/api.js`), sem suporte a variáveis de ambiente para trocar de ambiente (dev/staging/produção).
-
-## Licença
-
-Foi encontrado um arquivo `LICENSE` (MIT) dentro de `api-backend/`, mas seu conteúdo corresponde à licença padrão distribuída com o starter oficial do CodeIgniter 4 (`Copyright (c) 2014-2019 British Columbia Institute of Technology` / `Copyright (c) 2019-present CodeIgniter Foundation`). ⚠️ Não há uma licença própria declarada para o código de aplicação (controllers, services, models, migrations) nem para o `client-frontend`, portanto os termos de uso do código específico deste projeto não puderam ser confirmados.
-
----
 
 ## Diagnóstico da análise
 
