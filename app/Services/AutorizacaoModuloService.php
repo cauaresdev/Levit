@@ -5,16 +5,22 @@ namespace App\Services;
 use App\Exceptions\AcessoNegadoException;
 use App\Exceptions\NaoEncontradoException;
 use App\Models\CargoModuloPermissaoModel;
+use App\Models\CargoModel;
+use App\Models\ModuloModel;
 
 class AutorizacaoModuloService
 {
     private const NIVEIS = ['visualizar' => 1, 'editar' => 2, 'gerenciar' => 3];
 
     protected CargoModuloPermissaoModel $cargoModuloPermissaoModel;
+    protected CargoModel $cargoModel;
+    protected ModuloModel $moduloModel;
 
     public function __construct()
     {
         $this->cargoModuloPermissaoModel = new CargoModuloPermissaoModel();
+        $this->cargoModel                = new CargoModel();
+        $this->moduloModel               = new ModuloModel();
     }
 
     public function nivelDeAcesso(string $cargoId, string $moduloId): ?string
@@ -69,5 +75,70 @@ class AutorizacaoModuloService
             'modulo_id' => $moduloId,
             'nivel'     => 'gerenciar',
         ]);
+    }
+
+    /**
+     * @throws NaoEncontradoException se o cargo não existir/pertencer à empresa
+     */
+    private function confirmarCargoDaEmpresa(string $cargoId, string $empresaId): void
+    {
+        if (! $this->cargoModel->where('id', $cargoId)->where('empresa_id', $empresaId)->first()) {
+            throw new NaoEncontradoException('Cargo não encontrado.');
+        }
+    }
+
+    public function listarNiveisDoCargo(string $empresaId, string $cargoId): array
+    {
+        $this->confirmarCargoDaEmpresa($cargoId, $empresaId);
+
+        return $this->cargoModuloPermissaoModel
+            ->select('cargo_modulo_permissao.modulo_id, cargo_modulo_permissao.nivel, modulo.nome as modulo_nome')
+            ->join('modulo', 'modulo.id = cargo_modulo_permissao.modulo_id')
+            ->where('cargo_modulo_permissao.cargo_id', $cargoId)
+            ->findAll();
+    }
+
+    /**
+     * @throws NaoEncontradoException se cargo ou módulo não existirem/pertencerem à empresa
+     * @throws \DomainException se o nível informado for inválido
+     */
+    public function definirNivel(string $empresaId, string $cargoId, string $moduloId, string $nivel): array
+    {
+        if (! isset(self::NIVEIS[$nivel])) {
+            throw new \DomainException("Nível inválido: '{$nivel}'.");
+        }
+
+        $this->confirmarCargoDaEmpresa($cargoId, $empresaId);
+
+        if (! $this->moduloModel->where('id', $moduloId)->where('empresa_id', $empresaId)->first()) {
+            throw new NaoEncontradoException('Módulo não encontrado.');
+        }
+
+        $existente = $this->cargoModuloPermissaoModel
+            ->where('cargo_id', $cargoId)
+            ->where('modulo_id', $moduloId)
+            ->first();
+
+        if ($existente) {
+            $this->cargoModuloPermissaoModel->update($existente['id'], ['nivel' => $nivel]);
+        } else {
+            $this->cargoModuloPermissaoModel->insert([
+                'cargo_id'  => $cargoId,
+                'modulo_id' => $moduloId,
+                'nivel'     => $nivel,
+            ]);
+        }
+
+        return $this->listarNiveisDoCargo($empresaId, $cargoId);
+    }
+
+    public function removerNivel(string $empresaId, string $cargoId, string $moduloId): void
+    {
+        $this->confirmarCargoDaEmpresa($cargoId, $empresaId);
+
+        $this->cargoModuloPermissaoModel
+            ->where('cargo_id', $cargoId)
+            ->where('modulo_id', $moduloId)
+            ->delete();
     }
 }

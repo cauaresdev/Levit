@@ -62,4 +62,8 @@ $routes->group('api/v1', function ($routes) {
     $routes->get('backup/json', 'BackupController::exportarJson', ['filter' => 'auth:gerenciar_dados']);
     $routes->get("modulos/({$uuid})/exportar-csv", 'BackupController::exportarCsv/$1', ['filter' => 'auth:gerenciar_dados']);
     $routes->post('backup/resetar', 'BackupController::resetarFabrica', ['filter' => 'auth:gerenciar_dados']);
+
+    $routes->get("cargos/({$uuid})/modulos", 'CargoModuloPermissaoController::listar/$1', ['filter' => 'auth:gerenciar_cargos']);
+    $routes->put("cargos/({$uuid})/modulos/({$uuid})", 'CargoModuloPermissaoController::definir/$1/$2', ['filter' => 'auth:gerenciar_cargos']);
+    $routes->delete("cargos/({$uuid})/modulos/({$uuid})", 'CargoModuloPermissaoController::remover/$1/$2', ['filter' => 'auth:gerenciar_cargos']);
 });
