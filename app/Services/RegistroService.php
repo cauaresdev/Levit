@@ -13,17 +13,20 @@ class RegistroService
     protected ModuloModel $moduloModel;
     protected CampoModuloModel $campoModuloModel;
     protected RegistroModel $registroModel;
+    protected AutorizacaoModuloService $autorizacaoModuloService;
 
     public function __construct()
     {
-        $this->moduloModel      = new ModuloModel();
-        $this->campoModuloModel = new CampoModuloModel();
-        $this->registroModel    = new RegistroModel();
+        $this->moduloModel              = new ModuloModel();
+        $this->campoModuloModel         = new CampoModuloModel();
+        $this->registroModel            = new RegistroModel();
+        $this->autorizacaoModuloService = new AutorizacaoModuloService();
     }
 
-    public function listarRegistros(string $moduloId, string $empresaId, ?string $busca = null): array
+    public function listarRegistros(string $moduloId, string $empresaId, string $cargoId, bool $acessoTotal, ?string $busca = null): array
     {
         $this->confirmarModuloDaEmpresa($moduloId, $empresaId);
+        $this->autorizacaoModuloService->exigirNivel($acessoTotal, $cargoId, $moduloId, 'visualizar');
 
         if ($busca === null || trim($busca) === '') {
             return $this->registroModel
@@ -60,9 +63,11 @@ class RegistroService
         return $registros;
     }
 
-    public function criarRegistro(string $moduloId, string $empresaId, string $usuarioId, array $dados): array
+    public function criarRegistro(string $moduloId, string $empresaId, string $cargoId, bool $acessoTotal, string $usuarioId, array $dados): array
     {
-        $campos         = $this->confirmarModuloDaEmpresa($moduloId, $empresaId, true);
+        $campos = $this->confirmarModuloDaEmpresa($moduloId, $empresaId, true);
+        $this->autorizacaoModuloService->exigirNivel($acessoTotal, $cargoId, $moduloId, 'editar');
+
         $dadosValidados = $this->validarDadosDoRegistro($campos, $dados);
 
         $registroId = $this->registroModel->insert([
@@ -80,9 +85,10 @@ class RegistroService
         return $this->buscarRegistro($registroId, $moduloId, $empresaId);
     }
 
-    public function atualizarRegistro(string $registroId, string $moduloId, string $empresaId, string $usuarioId, array $dados): array
+    public function atualizarRegistro(string $registroId, string $moduloId, string $empresaId, string $cargoId, bool $acessoTotal, string $usuarioId, array $dados): array
     {
         $this->buscarRegistro($registroId, $moduloId, $empresaId);
+        $this->autorizacaoModuloService->exigirNivel($acessoTotal, $cargoId, $moduloId, 'editar');
 
         $campos         = $this->confirmarModuloDaEmpresa($moduloId, $empresaId, true);
         $dadosValidados = $this->validarDadosDoRegistro($campos, $dados);
@@ -101,9 +107,11 @@ class RegistroService
         return $this->buscarRegistro($registroId, $moduloId, $empresaId);
     }
 
-    public function excluirRegistro(string $registroId, string $moduloId, string $empresaId): void
+    public function excluirRegistro(string $registroId, string $moduloId, string $empresaId, string $cargoId, bool $acessoTotal): void
     {
-        $this->buscarRegistro($registroId, $moduloId, $empresaId);
+        $registro = $this->buscarRegistro($registroId, $moduloId, $empresaId);
+        $this->autorizacaoModuloService->exigirNivel($acessoTotal, $cargoId, $moduloId, 'editar');
+
         $this->registroModel->delete($registroId);
 
         Events::trigger('registro_excluido', [
@@ -134,11 +142,6 @@ class RegistroService
         return $registro;
     }
 
-    /**
-     * Confirma que o módulo existe e pertence à empresa. Opcionalmente,
-     * já devolve a lista de campos dele (evita uma segunda consulta
-     * em quem for validar dados logo em seguida).
-     */
     private function confirmarModuloDaEmpresa(string $moduloId, string $empresaId, bool $comCampos = false): ?array
     {
         $modulo = $this->moduloModel
@@ -157,12 +160,6 @@ class RegistroService
         return $this->campoModuloModel->where('modulo_id', $moduloId)->findAll();
     }
 
-    /**
-     * Valida os dados recebidos contra a definição real dos campos do
-     * módulo — o tipo de cada campo dita a regra aplicada.
-     *
-     * @throws \DomainException se algum valor não bater com o tipo esperado
-     */
     private function validarDadosDoRegistro(array $campos, array $dadosRecebidos): array
     {
         $dadosRecebidos = $dadosRecebidos['dados'] ?? [];
