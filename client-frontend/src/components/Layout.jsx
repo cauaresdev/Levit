@@ -18,13 +18,13 @@ export default function Layout({ children, noPadding = false }) {
     { name: 'Recrutamento', path: '/recrutamento' },
     { name: 'Módulos', path: '/modulos' },
     { divider: true },
-    { name: 'Equipe', path: '/equipe'},
-    { name: 'Configurações', path: '/configuracoes', disabled: true },
-    { name: 'Automações', path: '/automacoes', disabled: true },
+    { name: 'Equipe', path: '/team',},
+    { name: 'Configurações', path: '/configuracoes' },
+    { name: 'Automações', path: '/automacoes'},
   ];
 
   return (
-    <div className="min-h-0 flex bg-background font-sans text-gray-900">
+    <div className="h-screen flex bg-background font-sans text-gray-900 overflow-hidden">
       {/* SIDEBAR */}
       <aside className={`${sidebarOpen ? 'w-64' : 'w-0 overflow-hidden'} bg-white border-r border-divider flex flex-col justify-between shrink-0 transition-all duration-300 overflow-y-auto`}>
         <div>
@@ -98,7 +98,7 @@ export default function Layout({ children, noPadding = false }) {
       </aside>
 
       {/* ÁREA PRINCIPAL */}
-      <main className={`flex-1 min-w-0 flex flex-col ${noPadding ? '' : 'p-8'}`}>
+      <main className={`flex-1 overflow-y-auto flex flex-col ${noPadding ? '' : 'p-8'}`}>
         {children}
       </main>
     </div>

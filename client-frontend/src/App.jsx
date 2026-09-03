@@ -1,22 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
-<<<<<<< Updated upstream
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-=======
 import Modules from './pages/Modules';
 import ModuleForm from './pages/ModuleForm';
 import ModuleRecords from './pages/ModuleRecords';
@@ -66,16 +55,13 @@ function App() {
               <ModuleRecords />
             </ProtectedRoute>
           } />
-
-          <Route path="/equipe" element={
-              // <ProtectedRoute>
-                <TeamManagement />
-              // </ProtectedRoute>
-            }
-          />
+          <Route path="/team" element={
+            
+              <TeamManagement />
+            
+          } />
         </Routes>
       </AuthProvider>
->>>>>>> Stashed changes
     </BrowserRouter>
   );
 }
