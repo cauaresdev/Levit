@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="levit_purple">#534BAF</color>
+    <color name="levit_purple_dark">#413B8C</color>
+    <color name="levit_text_primary">#161829</color>
+    <color name="levit_text_secondary">#6B7280</color>
+    <color name="levit_hint">#9CA3AF</color>
+    <color name="levit_border">#E3E1F0</color>
+    <color name="levit_strength_strong">#22C55E</color>
+    <color name="levit_transparent">#00FFFFFF</color>
+</resources>
