@@ -11,6 +11,7 @@ import ModuleForm from './pages/ModuleForm';
 import ModuleRecords from './pages/ModuleRecords';
 import RecrutamentoKanban from './pages/RecrutamentoKanban';
 import TeamManagement from './pages/TeamManagement';
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
               <TeamManagement />
             
           } />
+          <Route path="/perfil" element={<Profile />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
