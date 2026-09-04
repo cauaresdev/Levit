@@ -12,10 +12,10 @@
         android:orientation="vertical"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="16dp"
+        android:paddingTop="48dp"
         android:paddingBottom="32dp">
 
-        <!-- Barra superior c/ a logo e voltar -->
+        <!-- Barra superior com a logo e voltar -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -28,7 +28,7 @@
                 android:gravity="center"
                 android:text="@string/return_txt"
                 android:textColor="@color/levit_text_primary"
-                android:textSize="20sp"
+                android:textSize="30sp"
                 android:contentDescription="@string/return_txt_desc" />
 
             <ImageView
@@ -69,18 +69,22 @@
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/etNomeCompleto"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nomeCompleto"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edit_text"
-            android:hint="@string/cadastro_name_field_example"
-            android:inputType="textPersonName"
-            android:maxLines="1"
-            android:textColor="@color/levit_text_primary"
-            android:textColorHint="@color/levit_hint"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/cadastro_name_field_title"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_edit_text"
+                android:inputType="textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- E-mail -->
         <TextView
@@ -91,18 +95,22 @@
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/etEmail"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailCorporativo"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edit_text"
-            android:hint="@string/email_field_example"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:textColor="@color/levit_text_primary"
-            android:textColorHint="@color/levit_hint"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/cadastro_email_field_title"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_edit_text"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- CPF ou CNPJ -->
         <TextView
@@ -113,18 +121,22 @@
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/etCpfCnpj"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/CPFouCNPJ"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edit_text"
-            android:hint="@string/cadastro_cpfcnpj_field_example"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textColor="@color/levit_text_primary"
-            android:textColorHint="@color/levit_hint"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/cpf_ou_cnpj"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_edit_text"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Senha -->
         <TextView
@@ -137,42 +149,68 @@
 
         <!-- Campo de Senha -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/etSenha"
+            android:id="@+id/layoutSenha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Crie uma senha forte"
+            android:hint="@string/crie_uma_senha_forte"
             app:passwordToggleEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSenha"
                 android:background="@drawable/bg_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Container das 4 barras -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:weightSum="4">
+
+            <View android:id="@+id/barra1" android:layout_width="0dp" android:layout_height="4dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@color/cinza_inativo" />
+            <View android:id="@+id/barra2" android:layout_width="0dp" android:layout_height="4dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@color/cinza_inativo" />
+            <View android:id="@+id/barra3" android:layout_width="0dp" android:layout_height="4dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@color/cinza_inativo" />
+            <View android:id="@+id/barra4" android:layout_width="0dp" android:layout_height="4dp" android:layout_weight="1" android:background="@color/cinza_inativo" />
+        </LinearLayout>
+
+        <!-- Texto de feedback opcional (ex: "Palavra-passe forte") -->
+        <TextView
+            android:id="@+id/textoForcaSenha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:text="" />
 
         <!-- Confirmar palavra-passe -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/cadastro_cpassword_field_title"
+            android:text="Confirmar senha"
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/etConfirmarSenha"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutConfirmarSenha"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edit_text"
-            android:hint="@string/cadastro_cpassword_field_example"
-            android:inputType="textPassword"
-            android:maxLines="1"
-            android:textColor="@color/levit_text_primary"
-            android:textColorHint="@color/levit_hint"
-            android:textSize="15sp" />
-
+            android:layout_height="wrap_content"
+            android:hint="@string/confirme_a_senha"
+            app:passwordToggleEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etConfirmarSenha"
+                android:background="@drawable/bg_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
         <!-- Ação principal -->
         <Button
             android:id="@+id/btnCriarConta"

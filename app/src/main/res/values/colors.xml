@@ -10,4 +10,9 @@
     <color name="levit_border">#E3E1F0</color>
     <color name="levit_strength_strong">#22C55E</color>
     <color name="levit_transparent">#00FFFFFF</color>
+    <color name="cinza_inativo">#E0E0E0</color>
+    <color name="vermelho_fraco">#F44336</color>
+    <color name="laranja_razoavel">#FF9800</color>
+    <color name="amarelo_bom">#FFC107</color>
+    <color name="verde_forte">#4CAF50</color>
 </resources>

@@ -55,34 +55,57 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/red_conta_desc"
+            android:text="Redefina a senha da sua conta Levit"
             android:textColor="@color/levit_text_secondary"
             android:textSize="14sp" />
 
-        <!-- E-mail -->
+        <!-- Senha -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="@string/login_email_field_title"
+            android:layout_marginTop="20dp"
+            android:text="@string/password_field_title"
+            android:textColor="@color/levit_text_secondary"
+            android:textSize="13sp" />
+
+        <!-- Campo de Senha -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etSenha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/crie_uma_senha_forte"
+            app:passwordToggleEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:background="@drawable/bg_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Confirmar palavra-passe -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/cadastro_cpassword_field_title"
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailCorporativo"
+            android:id="@+id/etConfirmarSenha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="@string/cadastro_email_field_title"
+            android:hint="@string/confirme_a_senha"
+            app:passwordToggleEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             >
-
             <com.google.android.material.textfield.TextInputEditText
+                android:background="@drawable/bg_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_edit_text"
-                android:inputType="textEmailAddress" />
-
+                android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

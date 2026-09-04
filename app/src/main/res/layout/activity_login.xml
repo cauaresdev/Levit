@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="16dp"
+        android:paddingTop="48dp"
         android:paddingBottom="32dp">
 
         <!-- Barra superior c/ a logo e voltar -->
@@ -28,7 +28,7 @@
                 android:gravity="center"
                 android:text="@string/return_txt"
                 android:textColor="@color/levit_text_primary"
-                android:textSize="20sp"
+                android:textSize="30sp"
                 android:contentDescription="@string/return_txt_desc" />
 
             <ImageView
@@ -69,18 +69,22 @@
             android:textColor="@color/levit_text_secondary"
             android:textSize="13sp" />
 
-        <EditText
-            android:id="@+id/etEmail"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailCorporativo"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_edit_text"
-            android:hint="@string/email_field_example"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:textColor="@color/levit_text_primary"
-            android:textColorHint="@color/levit_hint"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/cadastro_email_field_title"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_edit_text"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Senha e esqueci a senha -->
         <LinearLayout
@@ -121,9 +125,10 @@
             android:id="@+id/etSenha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Crie uma senha forte"
+            android:hint="Senha"
             app:passwordToggleEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
             <com.google.android.material.textfield.TextInputEditText
                 android:background="@drawable/bg_edit_text"
                 android:layout_width="match_parent"

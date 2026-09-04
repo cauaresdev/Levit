@@ -4,14 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="48dp"
     android:background="@color/white">
 
     <ImageView
         android:id="@+id/ivBackground"
-        android:layout_width="0dp"
-        android:layout_height="420dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_cityscape"
+        android:background="@drawable/bg_cityscape"
         android:contentDescription="@null"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +40,7 @@
         android:layout_marginEnd="24dp"
         android:text="@string/main_title1"
         android:textColor="@color/levit_text_primary"
-        android:textSize="26sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,10 +54,11 @@
         android:layout_marginEnd="24dp"
         android:text="@string/main_title2"
         android:textColor="@color/levit_purple"
-        android:textSize="26sp"
+        android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHeadlineLine1" />
 
     <TextView
