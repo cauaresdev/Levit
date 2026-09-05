@@ -2,37 +2,36 @@ package com.example.levit.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.levit.R
 import com.example.levit.databinding.ActivityCadastroBinding
-import android.text.Editable
 
 class CadastroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCadastroBinding
+
+    // Variável para guardar o nível da senha em tempo real
+    private var forcaSenhaAtual = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCadastroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.etConfirmarSenha.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                validarSenhasIguais()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        binding.textVoltar.setOnClickListener { finish() }
 
-        // Atualize o TextWatcher da PRIMEIRA senha para checar a igualdade também
+        binding.tvFacaLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        // Monitora a digitação da senha
         binding.etSenha.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                verificarForcaSenha(s.toString()) // A função das barrinhas que você já fez
-
-                // Só verifica a igualdade se o campo de confirmação já tiver algo digitado
+                verificarForcaSenha(s.toString())
                 if (binding.etConfirmarSenha.text.toString().isNotEmpty()) {
                     validarSenhasIguais()
                 }
@@ -41,50 +40,93 @@ class CadastroActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Ação de clique no texto da seta
-        binding.textVoltar.setOnClickListener {
-            finish() // Fecha a tela atual e volta para a anterior
-        }
-
-        // Tela de cadastro ainda não integrada a um back-end, mexer dps
-        binding.btnCriarConta.setOnClickListener {
-            Toast.makeText(this, "Cadastro efetuado", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.tvFacaLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
-
-        binding.btnCriarConta.setOnClickListener {
-            if (validarSenhasIguais()) {
-                Toast.makeText(this, "Cadastro efetuado", Toast.LENGTH_SHORT).show()
-                // Aqui entrará o código do banco de dados no futuro
-            } else {
-                Toast.makeText(this, "Verifique as senhas antes de continuar", Toast.LENGTH_SHORT).show()
+        // Monitora a confirmação da senha
+        binding.etConfirmarSenha.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                validarSenhasIguais()
             }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        // Regras de bloqueio ao clicar em Criar Conta
+        binding.btnCriarConta.setOnClickListener {
+            // 1. Extrair os textos digitados
+            val nome = binding.nomeCompleto.text.toString().trim()
+            val email = binding.etEmailCorporativo.text.toString().trim()
+            val cpfCnpj = binding.CPFouCNPJ.text.toString().trim()
+
+            // Limpa os erros visuais anteriores
+            binding.layoutNomeCompleto.error = null
+            binding.layoutEmailCorporativo.error = null
+            binding.layoutCPFouCPNJ.error = null
+
+            var possuiErro = false
+
+            // 2. Validações de campos vazios
+            if (nome.isEmpty()) {
+                binding.layoutNomeCompleto.error = "Preencha o nome completo"
+                possuiErro = true
+            }
+
+            if (email.isEmpty()) {
+                binding.layoutEmailCorporativo.error = "Preencha o e-mail"
+                possuiErro = true
+            }
+
+            if (cpfCnpj.isEmpty()) {
+                binding.layoutCPFouCPNJ.error = "Preencha o CPF ou CNPJ"
+                possuiErro = true
+            }
+
+            // 3. Validações da Senha
+            if (forcaSenhaAtual < 3) {
+                Toast.makeText(this, "A senha precisa ser 'Boa' ou 'Forte'", Toast.LENGTH_SHORT).show()
+                possuiErro = true
+            }
+
+            if (!validarSenhasIguais()) {
+                possuiErro = true // O aviso visual vermelho já é acionado dentro da função
+            }
+
+            // 4. Se encontrou qualquer erro, interrompe o envio
+            if (possuiErro) {
+                return@setOnClickListener
+            }
+
+            // Se o código chegou até aqui, todos os campos estão preenchidos e válidos!
+            Toast.makeText(this, "Dados validados! Pronto para enviar.", Toast.LENGTH_SHORT).show()
+            // criarContaNoFirebase(nome, email, cpfCnpj, binding.etSenha.text.toString())
+
+            if (cpfCnpj.isEmpty()) {
+                binding.layoutCPFouCPNJ.error = "Preencha o CPF"
+                possuiErro = true
+            } else if (!isCpfValido(cpfCnpj)) {
+                // Se não estiver vazio, checa se a matemática bate
+                binding.layoutCPFouCPNJ.error = "CPF inválido ou inexistente"
+                possuiErro = true
+            }
+
         }
+
+
 
     }
 
     private fun verificarForcaSenha(senha: String) {
-        var forca = 0
+        forcaSenhaAtual = 0
+        if (senha.length >= 8) forcaSenhaAtual++
+        if (senha.matches(".*[A-Z].*".toRegex()) && senha.matches(".*[a-z].*".toRegex())) forcaSenhaAtual++
+        if (senha.matches(".*[0-9].*".toRegex())) forcaSenhaAtual++
+        if (senha.matches(".*[@#\$%^&+=!].*".toRegex())) forcaSenhaAtual++
 
-        // Regras de pontuação (cada regra cumprida = 1 barra acesa)
-        if (senha.length >= 8) forca++ // Regra 1: Tamanho mínimo
-        if (senha.matches(".*[A-Z].*".toRegex()) && senha.matches(".*[a-z].*".toRegex())) forca++ // Regra 2: Maiúsculas e minúsculas
-        if (senha.matches(".*[0-9].*".toRegex())) forca++ // Regra 3: Números
-        if (senha.matches(".*[@#\$%^&+=!].*".toRegex())) forca++ // Regra 4: Caractere especial
+        if (senha.isEmpty()) forcaSenhaAtual = 0
 
-        // Se estiver vazio, zera a força
-        if (senha.isEmpty()) forca = 0
-
-        atualizarCoresDasBarras(forca)
+        atualizarCoresDasBarras(forcaSenhaAtual)
     }
 
     private fun atualizarCoresDasBarras(forca: Int) {
         val cinza = ContextCompat.getColor(this, R.color.cinza_inativo)
-
-        // Define a cor baseada no nível atual
         val corAtual = when (forca) {
             1 -> ContextCompat.getColor(this, R.color.vermelho_fraco)
             2 -> ContextCompat.getColor(this, R.color.laranja_razoavel)
@@ -93,13 +135,11 @@ class CadastroActivity : AppCompatActivity() {
             else -> cinza
         }
 
-        // Pinta as barras (acende com a cor atual ou apaga com cinza)
         binding.barra1.setBackgroundColor(if (forca >= 1) corAtual else cinza)
         binding.barra2.setBackgroundColor(if (forca >= 2) corAtual else cinza)
         binding.barra3.setBackgroundColor(if (forca >= 3) corAtual else cinza)
         binding.barra4.setBackgroundColor(if (forca >= 4) corAtual else cinza)
 
-        // Atualiza o texto (Opcional)
         binding.textoForcaSenha.setTextColor(corAtual)
         binding.textoForcaSenha.text = when (forca) {
             1 -> "Senha fraca"
@@ -114,7 +154,6 @@ class CadastroActivity : AppCompatActivity() {
         val senha = binding.etSenha.text.toString()
         val confirmar = binding.etConfirmarSenha.text.toString()
 
-        // Se estiver vazio, não mostra erro ainda
         if (confirmar.isEmpty()) {
             binding.layoutConfirmarSenha.error = null
             return false
@@ -124,9 +163,40 @@ class CadastroActivity : AppCompatActivity() {
             binding.layoutConfirmarSenha.error = "As senhas não coincidem"
             false
         } else {
-            binding.layoutConfirmarSenha.error = null // Remove o aviso de erro
+            binding.layoutConfirmarSenha.error = null
             true
         }
+    }
+
+    private fun isCpfValido(documento: String): Boolean {
+        // Remove tudo que não for número (resolve o requisito de não ter letras)
+        val cpf = documento.replace("[^0-9]".toRegex(), "")
+
+        // Um CPF deve ter exatamente 11 números
+        if (cpf.length != 11) return false
+
+        // Bloqueia CPFs com todos os números iguais (matematicamente passariam no cálculo, mas são falsos)
+        if (cpf.all { it == cpf[0] }) return false
+
+        // Cálculo do 1º dígito verificador
+        var soma = 0
+        for (i in 0..8) {
+            soma += Character.getNumericValue(cpf[i]) * (10 - i)
+        }
+        var resto = 11 - (soma % 11)
+        val digito1 = if (resto == 10 || resto == 11) 0 else resto
+
+        if (digito1 != Character.getNumericValue(cpf[9])) return false
+
+        // Cálculo do 2º dígito verificador
+        soma = 0
+        for (i in 0..9) {
+            soma += Character.getNumericValue(cpf[i]) * (11 - i)
+        }
+        resto = 11 - (soma % 11)
+        val digito2 = if (resto == 10 || resto == 11) 0 else resto
+
+        return digito2 == Character.getNumericValue(cpf[10])
     }
 
 }

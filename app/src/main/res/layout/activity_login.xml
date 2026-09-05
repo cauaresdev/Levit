@@ -109,6 +109,10 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:layout_width="10dp"
+                android:layout_height="10dp"/>
+
+            <TextView
                 android:id="@+id/tvRedefinir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -155,6 +159,10 @@
                 android:text="@string/login_registre_txt1"
                 android:textColor="@color/levit_text_secondary"
                 android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="10dp"/>
 
             <TextView
                 android:id="@+id/tvRegistrar"
